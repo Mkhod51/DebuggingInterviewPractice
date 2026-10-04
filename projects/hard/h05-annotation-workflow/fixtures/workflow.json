@@ -1,0 +1,62 @@
+{
+  "now": 50,
+  "items": [
+    {
+      "id": "task"
+    }
+  ],
+  "commands": [
+    {
+      "action": "claim",
+      "identifier": "task",
+      "actor": "owner",
+      "expected_version": 0
+    },
+    {
+      "action": "submit",
+      "identifier": "task",
+      "actor": "owner",
+      "expected_version": 1,
+      "data": {
+        "label": "yes"
+      }
+    },
+    {
+      "action": "review",
+      "identifier": "task",
+      "actor": "reviewer",
+      "expected_version": 2,
+      "approved": false,
+      "reason": "wrong"
+    },
+    {
+      "action": "requeue",
+      "identifier": "task",
+      "actor": "operator",
+      "expected_version": 3
+    },
+    {
+      "action": "claim",
+      "identifier": "task",
+      "actor": "second",
+      "expected_version": 4
+    },
+    {
+      "action": "submit",
+      "identifier": "task",
+      "actor": "second",
+      "expected_version": 5,
+      "data": {
+        "label": "no"
+      }
+    },
+    {
+      "action": "review",
+      "identifier": "task",
+      "actor": "reviewer",
+      "expected_version": 6,
+      "approved": true,
+      "score": 0.9
+    }
+  ]
+}
