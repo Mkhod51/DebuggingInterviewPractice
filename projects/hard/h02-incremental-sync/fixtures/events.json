@@ -1,0 +1,43 @@
+[
+  {
+    "id": "a1",
+    "record_id": "a",
+    "revision": 1,
+    "timestamp": 10,
+    "sequence": 1,
+    "kind": "upsert",
+    "payload": {
+      "v": 1
+    }
+  },
+  {
+    "id": "b1",
+    "record_id": "b",
+    "revision": 1,
+    "timestamp": 10,
+    "sequence": 2,
+    "kind": "upsert",
+    "payload": {
+      "v": 1
+    }
+  },
+  {
+    "id": "a2",
+    "record_id": "a",
+    "revision": 2,
+    "timestamp": 11,
+    "sequence": 3,
+    "kind": "delete"
+  },
+  {
+    "id": "old",
+    "record_id": "a",
+    "revision": 1,
+    "timestamp": 12,
+    "sequence": 4,
+    "kind": "upsert",
+    "payload": {
+      "v": 1
+    }
+  }
+]
