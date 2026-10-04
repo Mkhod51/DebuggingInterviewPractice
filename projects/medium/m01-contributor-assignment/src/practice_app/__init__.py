@@ -1,0 +1,1 @@
+"""Local contributor assignment application."""

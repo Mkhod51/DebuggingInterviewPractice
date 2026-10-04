@@ -1,0 +1,45 @@
+{
+  "contributors": [
+    {
+      "id": "partial",
+      "skills": [
+        "text"
+      ],
+      "languages": [
+        "en"
+      ],
+      "capacity": 10
+    },
+    {
+      "id": "qualified",
+      "skills": [
+        "text",
+        "audit"
+      ],
+      "languages": [
+        "en"
+      ],
+      "capacity": 3
+    }
+  ],
+  "tasks": [
+    {
+      "id": "first",
+      "skills": [
+        "text",
+        "audit"
+      ],
+      "language": "en",
+      "units": 3
+    },
+    {
+      "id": "large",
+      "skills": [
+        "text",
+        "audit"
+      ],
+      "language": "en",
+      "units": 4
+    }
+  ]
+}
