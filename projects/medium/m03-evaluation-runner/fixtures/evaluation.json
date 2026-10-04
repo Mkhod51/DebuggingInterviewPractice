@@ -1,0 +1,33 @@
+{
+  "cases": [
+    {
+      "id": "a",
+      "text": "one",
+      "expected": "yes"
+    },
+    {
+      "id": "b",
+      "text": "two",
+      "expected": "no"
+    },
+    {
+      "id": "c",
+      "text": "three",
+      "expected": "yes"
+    }
+  ],
+  "predictions": [
+    {
+      "case_id": "b",
+      "value": "no"
+    },
+    {
+      "case_id": "a",
+      "value": "yes"
+    },
+    {
+      "case_id": "c",
+      "error": "unavailable"
+    }
+  ]
+}
