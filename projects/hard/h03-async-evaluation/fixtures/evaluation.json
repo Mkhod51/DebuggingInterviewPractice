@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "id": "a",
+      "text": "one",
+      "expected": "yes"
+    },
+    {
+      "id": "b",
+      "text": "two",
+      "expected": "no"
+    },
+    {
+      "id": "c",
+      "text": "three",
+      "expected": "yes"
+    }
+  ],
+  "outcomes": {
+    "a": {
+      "value": "yes"
+    },
+    "b": {
+      "value": "no"
+    },
+    "c": {
+      "error": "offline"
+    }
+  },
+  "release_order": [
+    "b",
+    "c",
+    "a"
+  ]
+}
