@@ -1,0 +1,20 @@
+{
+  "ttl": 10,
+  "requests": [
+    {
+      "model": "a",
+      "version": "1",
+      "text": "hello"
+    },
+    {
+      "model": "a",
+      "version": "1",
+      "text": "hello"
+    },
+    {
+      "model": "b",
+      "version": "1",
+      "text": "hello"
+    }
+  ]
+}
