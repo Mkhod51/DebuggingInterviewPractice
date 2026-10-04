@@ -1,13 +1,16 @@
 # Build status
 
-Implementation in progress. No learner progress has been supplied.
+Implementation in progress. Learner progress is unknown/not supplied.
 
-- [x] Inspect initial repository and tooling (Python 3.14.0).
-- [x] Establish practice branch, preserve the supplied build prompt.
-- [ ] Build and assess pilots E01, M01, H01.
-- [ ] Complete the remaining twelve exercises and solution packages.
-- [ ] Verify attempt helper, standalone environments and solution workflows.
-- [ ] Final audit and complete coaching handoff.
+Completed and verified candidate projects: E01 (1/15).
+Each completed project has a matching solution checkpoint on the solutions branch.
+Checks: standalone editable installation, import/discovery, passing and failing
+starter tests, each defect isolated against the correct source, patch application,
+and passing visible plus extra tests. Python 3.14.0 / pytest 9.0.2.
 
-Baseline application tests will intentionally fail. Reference solutions must pass.
-Next action: implement the three pilots in order and verify each before committing.
+Helper: four standard-library tests passed. Research access limitations are recorded
+in interview-research.md. Next action: continue the catalog, then final fresh-copy
+audit and coaching documentation. Instructor records stay off this branch.
+
+Latest prior practice checkpoint: `6482394`.
+Find current exercise checkpoints with `git log --oneline -- projects`.
