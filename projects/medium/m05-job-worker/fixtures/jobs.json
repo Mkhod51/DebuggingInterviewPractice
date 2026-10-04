@@ -1,0 +1,24 @@
+{
+  "now": 50,
+  "jobs": [
+    {
+      "id": "retry",
+      "payload": {}
+    },
+    {
+      "id": "bad",
+      "payload": {}
+    }
+  ],
+  "scripts": {
+    "retry": [
+      "temporary",
+      {
+        "ok": true
+      }
+    ],
+    "bad": [
+      "permanent"
+    ]
+  }
+}
