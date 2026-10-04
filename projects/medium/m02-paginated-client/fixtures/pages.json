@@ -1,0 +1,38 @@
+{
+  "demo": {
+    "__first__": {
+      "items": [
+        {
+          "id": "a",
+          "payload": {
+            "text": "first"
+          }
+        }
+      ],
+      "next_cursor": ""
+    },
+    "": {
+      "items": [],
+      "next_cursor": "last"
+    },
+    "last": {
+      "items": [
+        {
+          "id": "a",
+          "payload": {
+            "text": "replacement"
+          }
+        },
+        {
+          "id": "b",
+          "payload": {}
+        },
+        {
+          "id": "c",
+          "payload": {}
+        }
+      ],
+      "next_cursor": null
+    }
+  }
+}
