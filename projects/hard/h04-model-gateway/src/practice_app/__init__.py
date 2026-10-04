@@ -1,0 +1,1 @@
+"""Local model gateway application."""

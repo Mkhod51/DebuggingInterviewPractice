@@ -1,0 +1,28 @@
+{
+  "routes": {
+    "tenant": {
+      "default": "primary",
+      "allowed": [
+        "primary",
+        "backup"
+      ],
+      "fallback": "backup"
+    }
+  },
+  "scripts": {
+    "primary": [
+      "transient",
+      "transient"
+    ],
+    "backup": [
+      "success"
+    ]
+  },
+  "requests": [
+    {
+      "request_id": "trace-42",
+      "tenant": "tenant",
+      "text": " hello "
+    }
+  ]
+}
