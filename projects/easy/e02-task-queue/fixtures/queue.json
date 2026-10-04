@@ -1,0 +1,20 @@
+[
+  {
+    "id": "future",
+    "priority": 10,
+    "created_at": 0,
+    "available_at": 20
+  },
+  {
+    "id": "ordinary",
+    "priority": 1,
+    "created_at": 0,
+    "available_at": 0
+  },
+  {
+    "id": "urgent",
+    "priority": 8,
+    "created_at": 0,
+    "available_at": 10
+  }
+]
