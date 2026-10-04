@@ -1,0 +1,52 @@
+{
+  "contributors": [
+    {
+      "id": "w",
+      "projects": [
+        "p"
+      ],
+      "certifications": [
+        "text"
+      ],
+      "languages": [
+        "en"
+      ],
+      "capacity": 2
+    }
+  ],
+  "projects": [
+    {
+      "id": "p",
+      "quota": 5
+    }
+  ],
+  "tasks": [
+    {
+      "id": "c",
+      "project": "p",
+      "certifications": [
+        "text"
+      ],
+      "language": "en",
+      "units": 1
+    },
+    {
+      "id": "a",
+      "project": "p",
+      "certifications": [
+        "text"
+      ],
+      "language": "en",
+      "units": 1
+    },
+    {
+      "id": "b",
+      "project": "p",
+      "certifications": [
+        "text"
+      ],
+      "language": "en",
+      "units": 1
+    }
+  ]
+}
