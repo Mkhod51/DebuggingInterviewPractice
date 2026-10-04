@@ -5,8 +5,8 @@ Intern (Summer 2027), London, debugging practical. Your supplied description con
 HackerRank, Python/TypeScript, unfamiliar code and failing cases; the session durations,
 project sizes and rubric below are our practice choices. No ML knowledge is required.
 
-All fifteen projects and their local reference packages are implemented. Final
-fresh-copy verification is in progress; see [build status](docs/BUILD_STATUS.md).
+All fifteen projects and their local reference packages are complete and verified
+from fresh standalone copies; see [build status](docs/BUILD_STATUS.md).
 Starting tests intentionally fail because of application behavior. Setup, imports
 and test discovery should succeed. Existing tests and README rules are the contract.
 
