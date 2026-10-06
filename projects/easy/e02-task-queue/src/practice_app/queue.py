@@ -19,7 +19,7 @@ class Queue:
         return self._tasks.get(task_id)
 
     def ordered(self):
-        return sorted(self._tasks.values(), key=lambda task: (task.priority, task.created_at, task.id))
+        return sorted(self._tasks.values(), key=lambda task: (-task.priority, task.created_at, task.id))
 
     def snapshot(self):
         return list(self._tasks.values())

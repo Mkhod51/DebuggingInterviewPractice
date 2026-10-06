@@ -9,7 +9,7 @@ OPTIONAL = {"label"}
 
 
 def read_rows(text):
-    reader = csv.DictReader(text.splitlines())
+    reader = csv.DictReader(text.splitlines(keepends = True))
     headers = reader.fieldnames
     if headers is None or not REQUIRED.issubset(headers):
         raise ValueError("Missing required headers")
@@ -25,7 +25,7 @@ def parse_record(row):
         raise ValueError("Too many fields")
     if any(row.get(name) is None for name in REQUIRED):
         raise ValueError("Missing required value")
-    identifier = row["id"].strip().lstrip("0")
+    identifier = row["id"].strip()
     if not identifier:
         raise ValueError("Empty ID")
     text = row["text"]

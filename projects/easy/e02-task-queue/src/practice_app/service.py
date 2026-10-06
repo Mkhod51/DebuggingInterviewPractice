@@ -23,7 +23,7 @@ class QueueService:
 
     def dispatch(self, now, limit):
         validate_limit(limit)
-        selected = ready(self.queue.ordered()[:limit], now)
+        selected = ready(self.queue.ordered(), now)[:limit]
         for task in selected:
             self.queue.remove(task.id)
         return Dispatch(tuple(selected), len(self.queue))
