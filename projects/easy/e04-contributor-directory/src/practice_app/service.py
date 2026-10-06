@@ -7,7 +7,10 @@ def display_quality(contributor, default):
     validate_quality(default)
     if default is None:
         raise ValueError("Display default must be numeric")
-    return contributor.quality or default
+    if contributor.quality is not None:
+        return contributor.quality 
+
+    return default
 
 
 def render_profile(contributor, default):

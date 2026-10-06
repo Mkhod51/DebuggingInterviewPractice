@@ -5,7 +5,7 @@ from .models import normalize_email
 class Directory:
     def __init__(self, contributors):
         contributors = list(contributors)
-        self._by_id = {row.id.casefold(): row for row in contributors}
+        self._by_id = {row.id: row for row in contributors}
         self._by_email = {normalize_email(row.email): row for row in contributors}
         if len(self._by_id) != len(contributors):
             raise ValueError("Duplicate contributor ID")

@@ -6,7 +6,7 @@ def summarize(reviews):
     reviews = list(reviews)
     total_weight = sum(row.weight for row in reviews)
     weighted_sum = sum(row.score * row.weight for row in reviews)
-    mean = weighted_sum / len(reviews) if reviews else 0 / total_weight
+    mean = weighted_sum / total_weight if reviews else None
     return Summary(len(reviews), total_weight, mean)
 
 
