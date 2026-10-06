@@ -39,7 +39,7 @@ class Window:
             raise ValueError("Window must have positive width")
 
     def contains(self, timestamp):
-        return self.start < timestamp < self.end
+        return self.start <= timestamp < self.end
 
 
 def load_annotations(path):

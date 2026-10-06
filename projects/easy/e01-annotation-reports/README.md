@@ -1,6 +1,45 @@
 # E01: Annotation reports
 
-An operations team generates per-project summaries of accepted annotation work for a reporting window.
+## Scenario
+
+An annotation team labels data, such as assigning categories to text. Each completed
+piece of work is recorded against a project and later marked accepted, pending or
+rejected. An operations person needs a report showing how much accepted work each
+project produced during a particular period.
+
+This application takes those records and a time window, then returns one summary
+per included project plus overall totals. The report is a Python object that can
+also be exported as JSON. You are working on the reporting backend; there is no
+dashboard or external service to run.
+
+## What the terms mean
+
+- **Annotation:** one recorded piece of labeling work, identified by `id`.
+- **Project:** the group that work belongs to, identified by `project`.
+- **Status:** whether the work has been accepted, is awaiting a decision, or was
+  rejected. Only accepted work contributes to this report.
+- **Timestamp:** when the work was recorded, in integer UTC seconds. This determines
+  which reporting window it belongs to.
+- **Seconds:** the duration of the work. This is the value to sum, rather than the
+  timestamp.
+- **Reporting window `[start, end)`:** a period including its start and excluding
+  its end, so adjacent reports do not count the same boundary record twice.
+
+## Example of correct behavior
+
+For the window `start=10, end=20`, consider:
+
+| ID | Project | Status | Timestamp | Seconds |
+| --- | --- | --- | --- | --- |
+| a | alpha | accepted | 12 | 20 |
+| b | beta | accepted | 15 | 30 |
+| c | alpha | pending | 16 | 8 |
+
+The report should contain `alpha` with count 1 and 20 seconds, then `beta` with
+count 1 and 30 seconds. Overall totals are count 2 and 50 seconds. Record `c` is
+inside the window but has not been accepted. The original records remain available
+unchanged for later reports. This example describes the required result; the
+starter implementation may produce a different result.
 
 ## Behavior contract
 
@@ -16,6 +55,18 @@ An operations team generates per-project summaries of accepted annotation work f
 Weekly totals omit work recorded exactly when the window begins, and some project summaries appear to inherit another project’s durations.
 
 ## Start here
+
+### Codebase map
+
+All application modules are under `src/practice_app/`:
+
+| File | Responsibility |
+| --- | --- |
+| `models.py` | Annotation records, window validation and fixture loading. |
+| `reporting.py` | Record selection, project summaries and overall totals. |
+| `service.py` | Report generation, project lookup and JSON export. |
+| `tests/test_reports.py` | Executable examples of the required report behavior. |
+| `fixtures/annotations.json` | A small local set of annotation records. |
 
 The public entry point is `practice_app.service.generate_report`. Explore the modules and local fixtures
 as needed. No network is used by this application or its tests. Tested on Python

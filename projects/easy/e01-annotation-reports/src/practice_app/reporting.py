@@ -26,7 +26,7 @@ def summarize(records):
     groups = {}
     bucket = []
     for record in records:
-        bucket = groups.setdefault(record.project, bucket)
+        bucket = groups.setdefault(record.project, [])
         bucket.append(record)
     return [ProjectSummary(project, len(bucket), sum(row.seconds for row in bucket))
             for project, bucket in sorted(groups.items())]

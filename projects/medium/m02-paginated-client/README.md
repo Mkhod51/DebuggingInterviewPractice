@@ -1,6 +1,44 @@
 # M02: Paginated dataset client
 
-A dataset client follows opaque pagination cursors from a local API and returns a stable deduplicated export.
+## Scenario
+
+A data team wants to export all records from a dataset API. The API does not
+return the entire dataset in one response: it returns a page of records and a
+token for requesting the next page. Records can overlap between pages, so the
+export must avoid repeating them while preserving the order in which they first
+appeared.
+
+This application is the client that makes those page requests and assembles one
+complete export. A local fake API supplies the responses and records the calls;
+there is no real HTTP server or network connection. You can inspect exactly what
+was requested and returned.
+
+## What the terms mean
+
+- **Dataset:** the named collection requested by the caller.
+- **Page:** one API response containing `items` and `next_cursor`. Each item has
+  an exact record ID and a dictionary payload.
+- **Pagination:** fetching a large collection through a sequence of page requests.
+- **Cursor:** an opaque continuation token issued by the API. Opaque means pass
+  it back as supplied, without interpreting it as a number or page index.
+- **`None`:** as a request cursor, start from the first page; as a response's next
+  cursor, there are no more pages. An empty string is a different, valid token.
+- **Deduplication:** keeping just the first occurrence of each record ID across
+  all pages, including its original payload.
+- **Protocol error:** a response or page sequence that breaks the API contract,
+  such as a continuation loop. It prevents a supposedly complete export being returned.
+
+## Example of correct behavior
+
+Suppose the first page contains IDs `a, b` and next cursor `"next"`. The response
+to cursor `"next"` contains IDs `b, c` and next cursor `None`. The complete export
+should have IDs `a, b, c`, in that order, with `page_count=2`. If the two copies of
+`b` have different payloads, the one from the first page wins.
+
+The final page's records still belong in the export even though its next cursor
+says to stop. An empty page with a continuation token still indicates that there
+is another page to request. These describe expected API behavior, rather than
+the current output of the buggy starter.
 
 ## Behavior contract
 
@@ -17,6 +55,19 @@ A dataset client follows opaque pagination cursors from a local API and returns 
 Exports stop unexpectedly on some cursor values, and multi-page exports contain only the most recent page.
 
 ## Start here
+
+### Codebase map
+
+All application modules are under `src/practice_app/`:
+
+| File | Responsibility |
+| --- | --- |
+| `api.py` | Fake page responses, recorded requests and injected API failures. |
+| `models.py` | Page/record shapes and response validation. |
+| `pagination.py` | Page traversal, loop guards and record collection. |
+| `service.py` | Dataset fetch entry point and export result. |
+| `tests/test_client.py` | Scripted page sequences and expected complete exports. |
+| `fixtures/pages.json` | Local pages for the `demo` dataset. |
 
 The public entry point is `practice_app.service.DatasetClient.fetch`. Explore the modules and local fixtures
 as needed. No network is used by this application or its tests. Tested on Python

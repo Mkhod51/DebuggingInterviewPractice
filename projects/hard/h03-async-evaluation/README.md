@@ -1,6 +1,48 @@
 # H03: Asynchronous evaluation
 
-An asynchronous evaluation service runs local predictions concurrently, records per-case failures and cleans up work when its caller cancels.
+## Scenario
+
+A team evaluates a text-labeling model on examples with known expected answers.
+To finish sooner, the service allows several prediction calls to be in progress
+at once. Those calls can finish in a different order from the input examples, and
+one call can fail while the others succeed. A user may also cancel the whole run
+while predictions are still pending.
+
+Your application coordinates the concurrent calls, produces a report in the
+original example order, and owns the cleanup of any unfinished work. The model
+is a local fake. Tests explicitly release its calls in chosen orders, so there
+is no dependency on model knowledge, real network timing or arbitrary sleeps.
+
+## What the terms mean
+
+- **Case:** an example with a unique ID, input text and expected label.
+- **Completion:** the eventual value or error from one prediction call, tagged
+  with its case ID. Finishing first does not mean it belongs to the first case.
+- **Asynchronous / concurrent:** several calls can be in progress while each
+  awaits completion. The caller uses `await` to wait for the evaluation result.
+- **`max_concurrency`:** the maximum number of active model calls at any instant,
+  rather than a limit on the total number of cases in the run.
+- **Child task:** one asynchronous unit of work created for a prediction.
+- **Cancellation:** the caller stops waiting for the run. The run must cancel
+  its child tasks and wait for their cleanup before propagating `CancelledError`.
+- **Accuracy and coverage:** accuracy is correct labels / successful predictions;
+  coverage is successful predictions / all input cases. A model error has no
+  correctness value and is not an incorrect label.
+- **Gate:** a test-controlled signal that lets a fake prediction finish. It
+  makes completion order and cleanup observable without real-time delays.
+
+## Example of correct behavior
+
+Input cases are `a`, `b`, `c`; their expected labels are `yes`, `no`, `yes`.
+With concurrency 2, no more than two predictions may be active at once. Suppose
+`b` finishes before `a`, both return their expected labels, and `c` later fails.
+The report should still list `a`, `b`, `c`, with correctness values `True`,
+`True`, `None`. Accuracy is 1 and coverage is `2/3`.
+
+If the caller cancels while calls are pending, the run should raise
+`CancelledError` only after those child tasks have been cleaned up. The runner
+can then be used for another run, with no active work left from the cancelled
+one. These are expected lifecycle results to compare with the starter.
 
 ## Behavior contract
 
@@ -18,6 +60,22 @@ An asynchronous evaluation service runs local predictions concurrently, records 
 Results follow completion order rather than example identity. Failed calls appear scored, concurrency exceeds the configured limit, and cancelled runs continue doing work.
 
 ## Start here
+
+### Codebase map
+
+All application modules are under `src/practice_app/`:
+
+| File | Responsibility |
+| --- | --- |
+| `models.py` | Cases, completions, per-case results and fixture loading. |
+| `controlled_model.py` | Fake predictions, completion gates and active-call observations. |
+| `runner.py` | Concurrent execution, run ownership and cancellation cleanup. |
+| `lifecycle.py` | Observable lifecycle stages for a run and its cleanup. |
+| `association.py` | Completion identity checks and results in input order. |
+| `metrics.py` | Accuracy, coverage and report values. |
+| `service.py` | Local orchestration, controlled finish order and fixture evaluation. |
+| `tests/test_async.py` | Concurrent execution, failures and cancellation scenarios. |
+| `fixtures/evaluation.json` | Cases, outcomes and a controlled completion order. |
 
 The public entry point is `practice_app.runner.AsyncRunner.run`. Explore the modules and local fixtures
 as needed. No network is used by this application or its tests. Tested on Python

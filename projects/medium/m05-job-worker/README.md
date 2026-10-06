@@ -1,6 +1,47 @@
 # M05: Retrying job worker
 
-A local worker processes queued dataset jobs, retries temporary failures on a controlled clock and records terminal outcomes.
+## Scenario
+
+A data pipeline has background jobs waiting to be processed, such as importing
+a dataset batch. Processing a job can succeed, fail temporarily, or fail in a
+way that trying again will not help. The operations team needs the worker to
+retry only appropriate failures, respect a finite attempt budget, and retain
+an accurate final status and result for each job.
+
+Unlike a queue that only hands work over, this application also calls the job
+handler and records the outcome. The handler is a local fake with scripted
+outcomes. A controlled clock represents time; the worker does not run a real
+background loop or sleep until a retry is due.
+
+## What the terms mean
+
+- **Job:** a uniquely identified payload plus its lifecycle state, attempt count,
+  due time, result and latest error.
+- **Handler:** the component that tries to perform the job's work. Its scripted
+  outcomes let tests reproduce success and failures deterministically.
+- **Tick:** one call to `Worker.tick`, which processes the jobs ready at that
+  point in time. A job is attempted at most once within that tick.
+- **Claim / running:** recording that the worker is starting one attempt. Each
+  claim increases the job's attempt count once.
+- **Temporary failure / `retry_wait`:** the work may succeed later, so the job is
+  scheduled for another attempt if its budget permits.
+- **Permanent failure:** retrying is inappropriate; the job becomes failed.
+- **Backoff:** increasing the delay between retries. Here it doubles after each
+  unsuccessful attempt, starting with `base_delay`.
+- **Terminal state:** `succeeded` or `failed`; the worker must not attempt it again.
+
+## Example of correct behavior
+
+A job is ready at time 100, with `max_attempts=3` and `base_delay=2`. Its scripted
+handler outcomes are temporary failure, temporary failure, then success. The
+first tick records attempt 1 and schedules the retry for time 102. A tick at
+101 does nothing for this job. At 102, attempt 2 fails and schedules time 106.
+At 106, attempt 3 succeeds and stores the result.
+
+Later ticks leave that succeeded job untouched. If attempt 3 had failed
+temporarily, the budget would be exhausted and the job would become failed.
+A permanent failure would end processing on the attempt that encountered it.
+This timeline describes the intended worker behavior.
 
 ## Behavior contract
 
@@ -19,6 +60,20 @@ A local worker processes queued dataset jobs, retries temporary failures on a co
 Some jobs exceed their attempt budget, permanent errors are retried, and retries scheduled later in the day become ready immediately.
 
 ## Start here
+
+### Codebase map
+
+All application modules are under `src/practice_app/`:
+
+| File | Responsibility |
+| --- | --- |
+| `models.py` | Job fields, retry policy and controlled clock. |
+| `repository.py` | Stored job state, claims, readiness and independent snapshots. |
+| `handler.py` | Scripted successes, temporary errors and permanent errors. |
+| `worker.py` | One tick's execution and outcome transitions. |
+| `service.py` | Fixture assembly and job state export. |
+| `tests/test_worker.py` | Attempt budgets, retry timing and lifecycle examples. |
+| `fixtures/jobs.json` | Jobs, clock settings and handler outcomes for a local run. |
 
 The public entry point is `practice_app.worker.Worker.tick`. Explore the modules and local fixtures
 as needed. No network is used by this application or its tests. Tested on Python

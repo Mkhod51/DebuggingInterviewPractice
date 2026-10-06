@@ -1,6 +1,52 @@
 # H04: Model gateway
 
-A model gateway validates tenant requests, chooses authorized local routes, retries temporary transport failures and emits correlated request traces.
+## Scenario
+
+Several customer accounts share a text-processing service. Each account has a
+default model, a list of models it is allowed to use, and possibly a backup model
+for temporary outages. Callers send their requests to a gateway, which chooses
+an authorized model, makes the call, checks the response and returns an outcome
+with a trace of what happened.
+
+This exercise implements that gateway across several layers. The model transport
+is a scripted local fake, so an outage or malformed response can be reproduced
+without contacting a real provider. You are debugging request handling and
+reliability; no model training or external account setup is involved.
+
+## What the terms mean
+
+- **Tenant:** the customer/account identity used to look up routing permissions.
+  It is different from the unique ID of an individual request.
+- **Request ID / correlation:** a value identifying the same request through
+  routing, transport, retries and response validation. Responses echo it so the
+  gateway can check that they belong to the request it sent.
+- **Route:** a tenant's default model, allowed model set and optional fallback.
+  A caller can explicitly choose a model if it is allowed.
+- **Transport:** the component that sends an encoded request to a selected model
+  and returns its response. Here it runs entirely locally.
+- **Transient failure:** a temporary transport problem for which another attempt
+  may help. A permanent failure must end the request immediately.
+- **Attempt budget:** `max_attempts` calls per model, including its first call.
+- **Fallback:** a different configured model tried after the initial model
+  exhausts its transient-failure budget.
+- **Protocol validation:** checking response ID, model and output shape before
+  trusting the result. An empty string is a valid output; malformed data is not.
+- **Trace:** events describing this request's route and execution, all carrying
+  its original request ID.
+
+## Example of correct behavior
+
+Tenant `team-a` allows models `primary` and `backup`, defaults to `primary`, and
+uses `backup` as fallback. A request `req-42` omits the model selection. With
+`max_attempts=2`, suppose the primary fails temporarily twice and the backup
+succeeds on its first call. The transport call sequence should be `primary`,
+`primary`, `backup`.
+
+The final successful result identifies `backup` as the model and retains request
+ID `req-42`; every event in its trace has that same ID. An unauthorized explicit
+model selection should instead return an error with no transport calls. A
+permanent error from the primary should end after one call. These describe the
+gateway's intended external behavior rather than its current implementation.
 
 ## Behavior contract
 
@@ -20,6 +66,22 @@ A model gateway validates tenant requests, chooses authorized local routes, retr
 Requests produce correlation errors, explicit model selection is ignored, permanent failures trigger more calls, and successful empty responses are rejected.
 
 ## Start here
+
+### Codebase map
+
+All application modules are under `src/practice_app/`:
+
+| File | Responsibility |
+| --- | --- |
+| `models.py` | Incoming requests and final result values. |
+| `routing.py` | Tenant permissions and model selection. |
+| `protocol.py` | Transport encoding and response validation. |
+| `transport.py` | Scripted model responses, failures and recorded calls. |
+| `executor.py` | Model attempts and fallback execution. |
+| `tracing.py` | Request-owned trace events and operational views. |
+| `service.py` | Public request handling and fixture assembly. |
+| `tests/test_gateway.py` | Routing, response, failure and trace examples. |
+| `fixtures/gateway.json` | Tenant routes, scripted outcomes and sample requests. |
 
 The public entry point is `practice_app.service.Gateway.handle`. Explore the modules and local fixtures
 as needed. No network is used by this application or its tests. Tested on Python
