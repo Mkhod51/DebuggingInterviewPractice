@@ -14,9 +14,9 @@ def assess(contributor, task, load):
         reasons.append("inactive")
     if task.language not in contributor.languages:
         reasons.append("language")
-    if not bool(task.skills & contributor.skills):
+    if not len(task.skills & contributor.skills) == len(task.skills):
         reasons.append("skills")
-    if not load + task.units < contributor.capacity:
+    if not load + task.units <= contributor.capacity:
         reasons.append("capacity")
     return Decision(not reasons, tuple(reasons))
 

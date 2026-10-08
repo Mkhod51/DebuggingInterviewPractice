@@ -40,7 +40,7 @@ class Repository:
         if self.remaining(contributor.id) < task.units:
             raise ValueError("Capacity exceeded")
         assignment = Assignment(task.id, contributor.id, task.units)
-        self._loads[contributor.id] += 1
+        self._loads[contributor.id] += task.units
         self._assignments[task.id] = assignment
         return assignment
 
