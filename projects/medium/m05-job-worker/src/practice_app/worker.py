@@ -24,7 +24,9 @@ class Worker:
         job = self.repository.claim(identifier, now)
         try:
             result = self.handler.execute(job)
-        except (RetryableError, PermanentError) as error:
+        except PermanentError as error:
+            self.repository.fail(identifier, error)
+        except RetryableError as error:
             due = self.policy.due(self.clock.now(), job.attempts) if self.policy.can_retry(job.attempts) else None
             self.repository.fail(identifier, error, due)
         except Exception as error:

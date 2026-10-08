@@ -40,10 +40,10 @@ class RetryPolicy:
             raise ValueError("Retry policy must be positive")
 
     def can_retry(self, attempts):
-        return attempts <= self.max_attempts
+        return attempts < self.max_attempts
 
     def due(self, now, attempts):
-        return self.base_delay * 2 ** (attempts - 1)
+        return now + self.base_delay * 2 ** (attempts - 1)
 
 
 class Clock:
