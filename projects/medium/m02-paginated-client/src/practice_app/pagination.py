@@ -29,7 +29,7 @@ def traverse(api, dataset, page_size, max_pages):
         cursors.append(cursor)
         page = Page.from_dict(api.fetch_page(dataset, cursor, page_size))
         pages.append(page)
-        if not page.next_cursor:
+        if page.next_cursor is None:
             break
         cursor = page.next_cursor
     return Traversal(tuple(pages), tuple(cursors))
@@ -38,7 +38,7 @@ def traverse(api, dataset, page_size, max_pages):
 def collect(traversal):
     accumulated = []
     for page in traversal.pages:
-        accumulated = list(page.items)
+        accumulated.extend(list(page.items))
     seen = set()
     unique = []
     for record in accumulated:
