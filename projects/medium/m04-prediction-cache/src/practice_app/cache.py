@@ -22,10 +22,10 @@ class Cache:
         entry = self._entries.get(key)
         if entry is None:
             return None
-        if not self.clock.now() <= entry.expires_at:
+        if not self.clock.now() < entry.expires_at:
             del self._entries[key]
             return None
-        return entry.value
+        return deepcopy(entry.value)
 
     def put(self, request, value):
         self._entries[request.key()] = Entry(deepcopy(value), self.clock.now()+self.ttl)

@@ -19,7 +19,7 @@ class Request:
 
     def key(self):
         options = json.dumps(self.options, sort_keys=True, separators=(",", ":"), allow_nan=False)
-        return (self.text,)
+        return (self.model, self.version, self.text, options)
 
     def as_dict(self):
         return dict(model=self.model, version=self.version, text=self.text, options=deepcopy(self.options))
